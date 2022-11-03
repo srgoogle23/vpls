@@ -8,80 +8,88 @@ using namespace std;
 class Time
 {
 	protected:
-		int pontos, jogos, golsMarcados, golsSofridos;
-		string nome;
+		int p;
+		int j;
+		int gm;
+		int gs;
+		string n;
 
 	public:
-		Time() : pontos(0), jogos(0), golsMarcados(0), golsSofridos(0) {}
-		void vitoria(int golsMarcados, int golsSofridos)
+		Time() : p(0), j(0), gm(0), gs(0) {}
+
+		Time(string n) : p(0), j(0), gm(0), gs(0), n(n) {}
+
+		void win(int g1, int g2)
 		{
-			pontos += 3;
-			jogos++;
-			this->golsMarcados += golsMarcados;
-			this->golsSofridos += golsSofridos;
+			this->p += 3;
+			this->j++;
+			this->gm += g1;
+			this->gs += g2;
 		}
 
-		void empate(int golsMarcados, int golsSofridos)
+		void tie(int g1, int g2)
 		{
-			pontos++;
-			jogos++;
-			this->golsMarcados += golsMarcados;
-			this->golsSofridos += golsSofridos;
+			this->p++;
+			this->j++;
+			this->gm += g1;
+			this->gs += g2;
 		}
 
-		void derrota(int golsMarcados, int golsSofridos)
+		void defeat(int g1, int g2)
 		{
-			jogos++;
-			this->golsMarcados += golsMarcados;
-			this->golsSofridos += golsSofridos;
+			this->j++;
+			this->gm += g1;
+			this->gs += g2;
 		}
 
-		double porcentagemPontosGanhos() const
+		double pointsRate() const
 		{
-			return pontos > 0 && jogos > 0 ? (double) pontos / (jogos * 3) : (double) 0;
+			if(this->p > 0 && this->j > 0)
+			{
+				return (double) this->p / (this->j * 3);
+			}
+			else
+			{
+				return 0;
+			}
 		}
 
-		int getGolsMarcados()
+		int ggm()
 		{
-			return golsMarcados;
+			return this->gm;
 		}
 
-		int getGolsSofridos()
+		int ggs()
 		{
-			return golsSofridos;
+			return this->gs;
 		}
 		
-		int getPontos()
+		int gp()
 		{
-			return pontos;
+			return this->p;
 		}
 		
-		int getJogos()
+		int gj()
 		{
-			return jogos;
+			return this->j;
 		}
 		
-		int getSaldoGols()
+		int gsg()
 		{
-			return golsMarcados - golsSofridos;
+			return this->gm - this->gs;
 		}
 
-		string getNome()
+		string gn()
 		{
-			return nome;
+			return this->n;
 		}
 
-		string getNomeFormatado()
+		string gnf()
 		{
-			string nomeFormatado;			
-			nomeFormatado = nome[0];
-			nomeFormatado += toupper(nome[1]);
-			return nomeFormatado;
-		}
-
-		void setNome(string nome)
-		{
-			this->nome = nome;
+			string nf;			
+			nf = n[0];
+			nf += toupper(n[1]);
+			return nf;
 		}
 };
 
@@ -107,8 +115,7 @@ class Jogo
 			{
 				string nome;
 				cin >> nome;
-				this->times1[nome] = Time();
-				this->times1[nome].setNome(nome);
+				this->times1[nome] = Time(nome);
 			}
 		}
 
@@ -122,18 +129,18 @@ class Jogo
 
 				if (golsA > golsB)
 				{
-					this->times1[timeA].vitoria(golsA, golsB);
-					this->times1[timeB].derrota(golsB, golsA);
+					this->times1[timeA].win(golsA, golsB);
+					this->times1[timeB].defeat(golsB, golsA);
 				}
 				else if (golsA < golsB)
 				{
-					this->times1[timeA].derrota(golsA, golsB);
-					this->times1[timeB].vitoria(golsB, golsA);
+					this->times1[timeA].defeat(golsA, golsB);
+					this->times1[timeB].win(golsB, golsA);
 				}
 				else
 				{
-					this->times1[timeA].empate(golsA, golsB);
-					this->times1[timeB].empate(golsB, golsA);
+					this->times1[timeA].tie(golsA, golsB);
+					this->times1[timeB].tie(golsB, golsA);
 				}
 			}
 		}
@@ -141,7 +148,7 @@ class Jogo
 		void ordenaJogos()
 		{
 			for (auto it = times1.begin(); it != times1.end(); it++)
-				times2[it->second.getPontos()][it->second.getGolsMarcados()][it->second.getNomeFormatado()] = it->second;
+				times2[it->second.gp()][it->second.ggm()][it->second.gnf()] = it->second;
 		}
 
 		void exibeResultado()
@@ -153,29 +160,29 @@ class Jogo
 				{
 					for (auto t3 = t2->second.begin(); t3 != t2->second.end(); t3++)
 					{
-						if(golsAnteriores != t3->second.getGolsMarcados())
+						if(golsAnteriores != t3->second.ggm())
 							cout << setw(3) << to_string(posicao) << ".";
-						else if (pontosAnteriores != t3->second.getPontos())
+						else if (pontosAnteriores != t3->second.gp())
 							cout << setw(3) << to_string(posicao) << ".";
 						else
 							cout << setw(3) << "    ";
 			
 						cout << setw(17);
 			
-						cout << t3->second.getNome();
-						cout << setw(4) << t3->second.getPontos();
-						cout << setw(4) << t3->second.getJogos();
-						cout << setw(4) << t3->second.getGolsMarcados();
-						cout << setw(4) << t3->second.getGolsSofridos();
-						cout << setw(4) << t3->second.getSaldoGols() << " ";
+						cout << t3->second.gn();
+						cout << setw(4) << t3->second.gp();
+						cout << setw(4) << t3->second.gj();
+						cout << setw(4) << t3->second.ggm();
+						cout << setw(4) << t3->second.ggs();
+						cout << setw(4) << t3->second.gsg() << " ";
 						// se a porcentagem de pontos ganhos for maior que 0, imprime com 2 casas decimais
-						if (t3->second.porcentagemPontosGanhos() > 0 || (t3->second.porcentagemPontosGanhos() == 0 && t3->second.getJogos() > 0))
-							cout << setw(6) << fixed << setprecision(2) << (t3->second.porcentagemPontosGanhos() * 100);
+						if (t3->second.pointsRate() > 0 || (t3->second.pointsRate() == 0 && t3->second.gj() > 0))
+							cout << setw(6) << fixed << setprecision(2) << (t3->second.pointsRate() * 100);
 						else
 							cout << setw(4) << "  N/A";
 						cout << endl;
-						golsAnteriores = t3->second.getGolsMarcados();
-						pontosAnteriores = t3->second.getPontos();
+						golsAnteriores = t3->second.ggm();
+						pontosAnteriores = t3->second.gp();
 						posicao++;
 					}
 				}
