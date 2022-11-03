@@ -125,10 +125,10 @@ class Time
 class Jogo
 {
 	private:
-		int numeroDeTimes, numeroDeJogos;
+		int numeroDeTimes, numeroDeJogos, position = 1, ga = -1, pa = -1;
 		map<string, Time> times1;
 		map<int, map<int, map<string, Time, less<string>>, greater<int>>, greater<int>> times2;
-
+		
 	public:
 		Jogo()
 		{
@@ -180,22 +180,25 @@ class Jogo
 				times2[it->second.gp()][it->second.ggm()][it->second.gnf()] = it->second;
 		}
 
+		void atualizaControladores(int ga, int pa)
+		{
+			this->position++;
+			this->ga = ga;
+			this->pa = pa;
+		}
+
 		void exibeResultado()
 		{
-			int posicao = 1, golsAnteriores = -1, pontosAnteriores = -1;
 			for (auto t1 = times2.begin(); t1 != times2.end(); t1++)
 			{
 				for (auto t2 = t1->second.begin(); t2 != t1->second.end(); t2++)
 				{
 					for (auto t3 = t2->second.begin(); t3 != t2->second.end(); t3++)
 					{
-						t3->second.showPosition(posicao, golsAnteriores, pontosAnteriores);
+						t3->second.showPosition(this->position, this->ga, this->pa);
 						t3->second.showAtributes();
-						t3->second.showPointsRate();
-						
-						golsAnteriores = t3->second.ggm();
-						pontosAnteriores = t3->second.gp();
-						posicao++;
+						t3->second.showPointsRate();	
+						atualizaControladores(t3->second.ggm(), t3->second.gp());
 					}
 				}
 			}
