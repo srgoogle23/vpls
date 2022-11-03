@@ -121,7 +121,7 @@ class Time
 			
 			cout << endl;
 		}
-
+};
 class Jogo
 {
 	private:
