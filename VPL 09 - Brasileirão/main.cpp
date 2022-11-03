@@ -91,7 +91,36 @@ class Time
 			nf += toupper(n[1]);
 			return nf;
 		}
-};
+
+		void showPosition(int position, int ga, int pa)
+		{
+			if(ga != ggm() || pa != gp())
+				cout << setw(3) << to_string(position) << ".";
+			else
+				cout << setw(3) << "    ";
+			
+			cout << setw(17);
+		}
+
+		void showAtributes()
+		{
+			cout << gn();
+			cout << setw(4) << gp();
+			cout << setw(4) << gj();
+			cout << setw(4) << ggm();
+			cout << setw(4) << ggs();
+			cout << setw(4) << gsg() << " ";
+		}
+
+		void showPointsRate()
+		{
+			if (pointsRate() > 0 || (pointsRate() == 0 && gj() > 0))
+				cout << setw(6) << fixed << setprecision(2) << (pointsRate() * 100);
+			else
+				cout << setw(4) << "  N/A";
+			
+			cout << endl;
+		}
 
 class Jogo
 {
@@ -160,27 +189,10 @@ class Jogo
 				{
 					for (auto t3 = t2->second.begin(); t3 != t2->second.end(); t3++)
 					{
-						if(golsAnteriores != t3->second.ggm())
-							cout << setw(3) << to_string(posicao) << ".";
-						else if (pontosAnteriores != t3->second.gp())
-							cout << setw(3) << to_string(posicao) << ".";
-						else
-							cout << setw(3) << "    ";
-			
-						cout << setw(17);
-			
-						cout << t3->second.gn();
-						cout << setw(4) << t3->second.gp();
-						cout << setw(4) << t3->second.gj();
-						cout << setw(4) << t3->second.ggm();
-						cout << setw(4) << t3->second.ggs();
-						cout << setw(4) << t3->second.gsg() << " ";
-						// se a porcentagem de pontos ganhos for maior que 0, imprime com 2 casas decimais
-						if (t3->second.pointsRate() > 0 || (t3->second.pointsRate() == 0 && t3->second.gj() > 0))
-							cout << setw(6) << fixed << setprecision(2) << (t3->second.pointsRate() * 100);
-						else
-							cout << setw(4) << "  N/A";
-						cout << endl;
+						t3->second.showPosition(posicao, golsAnteriores, pontosAnteriores);
+						t3->second.showAtributes();
+						t3->second.showPointsRate();
+						
 						golsAnteriores = t3->second.ggm();
 						pontosAnteriores = t3->second.gp();
 						posicao++;
