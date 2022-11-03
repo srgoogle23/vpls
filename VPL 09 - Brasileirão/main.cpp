@@ -1,10 +1,7 @@
-#include <iostream>     // std::cout, std::endl
-#include <iomanip>      // std::setw
-#include <map>          // std::map
-#include <queue>        // std::priority_queue
-#include <utility>      // std::pair
-#include <cctype>       // std::tolower
-#include <algorithm>    // std::sort
+#include <iostream>
+#include <iomanip>
+#include <map>
+#include <cctype>
 
 using namespace std;
 
@@ -88,117 +85,109 @@ class Time
 		}
 };
 
-map<string, Time> getTimes(int numeroDeTimes);
-int leInteiro();
-string leString();
-map<string, Time> leJogos(map<string, Time> times, int numeroDeJogos);
-
-map<int, map<int, map<string, Time, less<string>>, greater<int>>, greater<int>> ordenaTimes(map<string, Time> times)
+class Jogo
 {
-    map<int, map<int, map<string, Time, less<string>>, greater<int>>, greater<int>> timesParaOrdenar;
-	for (auto it = times.begin(); it != times.end(); it++)
-	{
-		timesParaOrdenar[it->second.getPontos()][it->second.getGolsMarcados()][it->second.getNomeFormatado()] = it->second;
-	}
+	private:
+		int numeroDeTimes, numeroDeJogos;
+		map<string, Time> times1;
+		map<int, map<int, map<string, Time, less<string>>, greater<int>>, greater<int>> times2;
 
-	return timesParaOrdenar;
-}
+	public:
+		Jogo()
+		{
+			cin >> numeroDeTimes >> numeroDeJogos;
+			criarTimes();
+			criarJogos();
+			ordenaJogos();
+		}
+
+		void criarTimes()
+		{
+			for (int i = 0; i < this->numeroDeTimes; i++)
+			{
+				string nome;
+				cin >> nome;
+				this->times1[nome] = Time();
+				this->times1[nome].setNome(nome);
+			}
+		}
+
+		void criarJogos()
+		{
+			for (int i = 0; i < this->numeroDeJogos; i++)
+			{
+				string timeA, timeB, vazio;
+				int golsA, golsB;
+				cin >> timeA >> golsA >> vazio >> golsB >> timeB;
+
+				if (golsA > golsB)
+				{
+					this->times1[timeA].vitoria(golsA, golsB);
+					this->times1[timeB].derrota(golsB, golsA);
+				}
+				else if (golsA < golsB)
+				{
+					this->times1[timeA].derrota(golsA, golsB);
+					this->times1[timeB].vitoria(golsB, golsA);
+				}
+				else
+				{
+					this->times1[timeA].empate(golsA, golsB);
+					this->times1[timeB].empate(golsB, golsA);
+				}
+			}
+		}
+
+		void ordenaJogos()
+		{
+			for (auto it = times1.begin(); it != times1.end(); it++)
+				times2[it->second.getPontos()][it->second.getGolsMarcados()][it->second.getNomeFormatado()] = it->second;
+		}
+
+		void exibeResultado()
+		{
+			int posicao = 1, golsAnteriores = -1, pontosAnteriores = -1;
+			for (auto t1 = times2.begin(); t1 != times2.end(); t1++)
+			{
+				for (auto t2 = t1->second.begin(); t2 != t1->second.end(); t2++)
+				{
+					for (auto t3 = t2->second.begin(); t3 != t2->second.end(); t3++)
+					{
+						if(golsAnteriores != t3->second.getGolsMarcados())
+							cout << setw(3) << to_string(posicao) << ".";
+						else if (pontosAnteriores != t3->second.getPontos())
+							cout << setw(3) << to_string(posicao) << ".";
+						else
+							cout << setw(3) << "    ";
+			
+						cout << setw(17);
+			
+						cout << t3->second.getNome();
+						cout << setw(4) << t3->second.getPontos();
+						cout << setw(4) << t3->second.getJogos();
+						cout << setw(4) << t3->second.getGolsMarcados();
+						cout << setw(4) << t3->second.getGolsSofridos();
+						cout << setw(4) << t3->second.getSaldoGols() << " ";
+						// se a porcentagem de pontos ganhos for maior que 0, imprime com 2 casas decimais
+						if (t3->second.porcentagemPontosGanhos() > 0 || (t3->second.porcentagemPontosGanhos() == 0 && t3->second.getJogos() > 0))
+							cout << setw(6) << fixed << setprecision(2) << (t3->second.porcentagemPontosGanhos() * 100);
+						else
+							cout << setw(4) << "  N/A";
+						cout << endl;
+						golsAnteriores = t3->second.getGolsMarcados();
+						pontosAnteriores = t3->second.getPontos();
+						posicao++;
+					}
+				}
+			}
+		}
+};
+
+
 
 int main()
 {
-	int numeroDeTimes = leInteiro();
-	int numeroDeJogos = leInteiro();
-    map<int, map<int, map<string, Time, less<string>>, greater<int>>, greater<int>> times = ordenaTimes(leJogos(getTimes(numeroDeTimes), numeroDeJogos));
-	int posicao = 1, golsAnteriores = -1, pontosAnteriores = -1;
-	for (auto t1 = times.begin(); t1 != times.end(); t1++)
-	{
-		for (auto t2 = t1->second.begin(); t2 != t1->second.end(); t2++)
-		{
-            for (auto t3 = t2->second.begin(); t3 != t2->second.end(); t3++)
-    		{
-    			if(golsAnteriores != t3->second.getGolsMarcados())
-    				cout << setw(3) << to_string(posicao) << ".";
-    			else if (pontosAnteriores != t3->second.getPontos())
-    				cout << setw(3) << to_string(posicao) << ".";
-    			else
-    				cout << setw(3) << "    ";
-    
-    			cout << setw(17);
-    
-    			cout << t3->second.getNome();
-    			cout << setw(4) << t3->second.getPontos();
-    			cout << setw(4) << t3->second.getJogos();
-    			cout << setw(4) << t3->second.getGolsMarcados();
-    			cout << setw(4) << t3->second.getGolsSofridos();
-    			cout << setw(4) << t3->second.getSaldoGols() << " ";
-    			// se a porcentagem de pontos ganhos for maior que 0, imprime com 2 casas decimais
-    			if (t3->second.porcentagemPontosGanhos() > 0 || (t3->second.porcentagemPontosGanhos() == 0 && t3->second.getJogos() > 0))
-    				cout << setw(6) << fixed << setprecision(2) << (t3->second.porcentagemPontosGanhos() * 100);
-    			else
-    				cout << setw(4) << "  N/A";
-    			cout << endl;
-    			golsAnteriores = t3->second.getGolsMarcados();
-    			pontosAnteriores = t3->second.getPontos();
-    			posicao++;
-    		}
-		}
-	}
+	Jogo jogo;
+	jogo.exibeResultado();
 	return 0;   
-}
-
-map<string, Time> leJogos(map<string, Time> times, int numeroDeJogos)
-{
-	string tA, tB;
-	int gA, gB;
-	for (int i = 0; i < numeroDeJogos; i++)
-	{
-		tA = leString();
-		gA = leInteiro();
-		leString();
-		gB = leInteiro();
-		tB = leString();
-
-		if (gA > gB)
-		{
-			times[tA].vitoria(gA, gB);
-			times[tB].derrota(gB, gA);
-		}
-		else if (gA < gB)
-		{
-			times[tA].derrota(gA, gB);
-			times[tB].vitoria(gB, gA);
-		}
-		else
-		{
-			times[tA].empate(gA, gB);
-			times[tB].empate(gB, gA);
-		}
-	}
-	return times;
-}
-
-map<string, Time> getTimes(int numeroDeTimes)
-{
-	map<string, Time> times;
-	for (int i = 0; i < numeroDeTimes; i++)
-	{
-		string nome = leString();
-		times[nome] = Time();
-		times[nome].setNome(nome);
-	}
-	return times;
-}
-
-string leString()
-{
-	string s;
-	cin >> s;
-	return s;
-}
-
-int leInteiro()
-{
-	int n;
-	cin >> n;
-	return n;
 }
