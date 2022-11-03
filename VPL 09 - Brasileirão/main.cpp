@@ -86,27 +86,6 @@ class Time
 		{
 			this->nome = nome;
 		}
-
-		bool operator>(const Time &t) const
-		{
-			if (pontos != t.pontos)
-				return pontos > t.pontos;
-			else
-				return nome > t.nome;
-		}
-
-		bool operator<(const Time& t) const
-		{
-			if (pontos != t.pontos)
-				return pontos > t.pontos;
-			else
-				return nome < t.nome;
-		}
-
-		bool operator==(const Time& t) const
-		{
-			return pontos == t.pontos;
-		}
 };
 
 map<string, Time> getTimes(int numeroDeTimes);
