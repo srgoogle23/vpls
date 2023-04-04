@@ -6,13 +6,13 @@
 class Processo
 {
     public:
-		    int id;
+		int id;
         std::string nome;
         int prioridade;
         Processo();
         Processo(int id, std::string nome, int prioridade);
         void imprimir_dados();
-
+		double tempo_reservado_processo();
 };
 
 #endif
