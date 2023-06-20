@@ -1,95 +1,88 @@
 #include "arquivo.hpp"
 #include "utils.hpp"
 
-void Arquivo::mesclarWords(map<string, set<string>> words, string nome)
+Arquivo::Arquivo() {}
+
+Arquivo::Arquivo(std::string nomeArquivo)
 {
-	map<string, set<string>, less<string>> wordsFinal = this->getWords();
-	for (auto &word : words)
+	this->nomeArquivo = nomeArquivo;
+}
+
+void Arquivo::configurarNome(std::string nomeArquivo)
+{
+	this->nomeArquivo = nomeArquivo;
+}
+
+std::string Arquivo::pegarNome()
+{
+	return this->nomeArquivo;
+}
+
+void Arquivo::pegarPalavras()
+{
+	std::ifstream arquivo(this->nomeArquivo);
+	std::string palavra;
+	while (arquivo >> palavra)
 	{
-		// se word ja existe no wordsFinal
-		if (wordsFinal.find(word.first) != wordsFinal.end())
-		{
-			// adiciona o nome no set
-			wordsFinal[word.first].insert(nome);
-		}
-		else
-		{
-			wordsFinal[word.first].insert(nome);
-		}
-	}
-
-	setWords(wordsFinal);
-
-}
-
-void Arquivo::setWords(map<string, set<string>> words)
-{
-	this->formatedWords = words;
-}
-
-map<string, set<string>> Arquivo::getWords()
-{
-	return formatedWords;
-}
-
-void Arquivo::setNome(string nome)
-{
-	this->nome = nome;
-}
-
-void Arquivo::imprimir()
-{
-	for (auto &word : formatedWords)
-	{
-		cout << word.first << " ";
-		for (auto &file : word.second)
-		{
-			cout << file << " ";
-		}
-		cout << endl;
-	}
-}
-
-Arquivo::Arquivo()
-{
-}
-
-Arquivo::Arquivo(string nome)
-{
-	this->nome = nome;
-}
-
-string Arquivo::getNome()
-{
-	return this->nome;
-}
-
-void Arquivo::lePalavras()
-{
-	ifstream arquivo(this->nome.c_str());
-	string palavra1;
-	string palavra2;
-	while (arquivo >> palavra2)
-	{
-		// converte string para string
-		palavra1.assign(palavra2.begin(), palavra2.end());
-		this->palavras.push_back(palavra1);
+		this->palavras.push_back(palavra);
 	}
 	arquivo.close();
 }
 
-void Arquivo::substituiCaracteres()
+void Arquivo::mudarLetras()
 {
 	for (unsigned int i = 0; i < this->palavras.size(); i++)
 	{
-		this->palavras[i] = Utils::removerAcentos(this->palavras[i]);
+		this->palavras[i] = Utils::removerDetalhesPalavras(this->palavras[i]);
 	}
 }
 
-void Arquivo::lerArquivo()
+void Arquivo::pegarArquivo()
 {
-	lePalavras();
-	substituiCaracteres();
+	pegarPalavras();
+	mudarLetras();
 	for (unsigned int i = 0; i < this->palavras.size(); i++)
-		this->formatedWords[this->palavras[i]].insert(getNome());
+	{
+		this->palavrasFormatadas[this->palavras[i]].insert(pegarNome());
+	}
+}
+
+void Arquivo::mostrar()
+{
+	for (const auto &word : palavrasFormatadas)
+	{
+		std::cout << word.first << " ";
+		for (const auto &file : word.second)
+		{
+			std::cout << file << " ";
+		}
+		std::cout << std::endl;
+	}
+}
+
+std::map<std::string, std::set<std::string>> Arquivo::pegarPalavrasFormatadas()
+{
+	return palavrasFormatadas;
+}
+
+void Arquivo::configurarPalavrasFormatadas(std::map<std::string, std::set<std::string>> words)
+{
+	this->palavrasFormatadas = words;
+}
+
+void Arquivo::misturarPalavrasFormatadas(std::map<std::string, std::set<std::string>> words, std::string nomeArquivo)
+{
+	std::map<std::string, std::set<std::string>> wordsFinal = this->pegarPalavrasFormatadas();
+	for (const auto &word : words)
+	{
+		if (wordsFinal.find(word.first) != wordsFinal.end())
+		{
+			wordsFinal[word.first].insert(nomeArquivo);
+		}
+		else
+		{
+			wordsFinal[word.first].insert(nomeArquivo);
+		}
+	}
+	configurarPalavrasFormatadas(wordsFinal);
 }

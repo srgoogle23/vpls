@@ -5,36 +5,38 @@
 #include "pesquisa.hpp"
 #include "utils.hpp"
 
+using namespace std;
+
 int main(int argc, char* argv[]) {
-    if (argc < 2) {
-        std::cout << "Uso: " << argv[0] << " <caminho_para_pasta>" << std::endl;
-        return 1;
+    string localizacaoArquivos = "./documentos/";
+    vector<string> nomesArquivosDaPasta = Utils::pegarArquivosPasta(localizacaoArquivos);
+    vector<Arquivo> arquivosDaPasta;
+
+    for (const string& nomeArquivoDaPasta : nomesArquivosDaPasta) {
+        string caminhoArquivoDaPasta = localizacaoArquivos + "/" + nomeArquivoDaPasta;
+        arquivosDaPasta.push_back(Arquivo(caminhoArquivoDaPasta));
     }
 
-    std::string pasta(argv[1]);
-    std::vector<std::string> nomesArquivos = Utils::obterArquivosDaPasta(pasta);
-    std::vector<Arquivo> arquivos;
-
-    for (const std::string& nomeArquivo : nomesArquivos) {
-        std::string caminhoArquivo = pasta + "/" + nomeArquivo;
-        arquivos.push_back(Arquivo(caminhoArquivo));
+    unsigned int contador = 0;
+    unsigned int parametro = arquivosDaPasta.size();
+    while (contador < parametro) {
+        arquivosDaPasta[contador].pegarArquivo();
+        contador++;
     }
 
-    for (unsigned int i = 0; i < arquivos.size(); i++) {
-        arquivos[i].lerArquivo();
-    }
-
+    contador = 0;
     Arquivo arquivo;
-    for (unsigned int i = 0; i < arquivos.size(); i++) {
-        arquivo.mesclarWords(arquivos[i].getWords(), arquivos[i].getNome());
+    while (contador < parametro) {
+        arquivo.misturarPalavrasFormatadas(arquivosDaPasta[contador].pegarPalavrasFormatadas(), arquivosDaPasta[contador].pegarNome());
+        contador++;
     }
 
-    std::cout << "Digite uma frase para a pesquisa: " << std::endl;
-    std::string frase;
-    std::getline(std::cin, frase);
+    cout << "Qual frase deseja pesquisar?" << endl;
+    string frasePesquisa;
+    getline(cin, frasePesquisa);
 
     Pesquisa pesquisa(arquivo);
-    pesquisa.pesquisaRelavancia(frase);
+    pesquisa.retornarRelevanciaFrase(frasePesquisa);
 
     return 0;
 }

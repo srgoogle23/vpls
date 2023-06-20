@@ -5,15 +5,15 @@
 #include <algorithm>
 #include <vector>
 #include <dirent.h>
-
-using namespace std;
+#include <regex>
+#include <locale>
 
 class Utils
 {
-	public:
-		Utils();
-		static vector<string> obterArquivosDaPasta(const string &pasta);
-		static string removerAcentos(string str);
+public:
+    Utils();
+    static std::vector<std::string> pegarArquivosPasta(const std::string &pasta);
+    static std::string removerDetalhesPalavras(std::string str);
 };
 
 #endif

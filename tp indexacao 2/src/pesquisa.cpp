@@ -1,84 +1,101 @@
 #include "pesquisa.hpp"
+#include <iostream>
 
-bool Pesquisa::relavante(map<string, set<string>> words, set<string> palavras, string arquivo)
+Pesquisa::Pesquisa() {}
+
+Pesquisa::Pesquisa(const Arquivo& arquivo) : arquivo(arquivo) {}
+
+bool Pesquisa::seraQueEhRelevante(const std::map<std::string, std::set<std::string>>& words, const std::set<std::string>& palavras, const std::string& arquivo)
 {
-	map<string, string> wordsOfFile;
-	for (auto &word : words)
-		for (auto &file : word.second)
-			if (file == arquivo)
-				wordsOfFile[word.first] = file;
-	unsigned int qtdWords = palavras.size();
-	unsigned int counter = 0;
-	for (auto &wordsOfFile: wordsOfFile)
-		for (auto &palavra: palavras)
-			if (wordsOfFile.first == palavra)
-				counter++;
+    std::map<std::string, std::string> wordsDoArquivo;
+    for (const auto& word : words)
+    {
+        for (const auto& file : word.second)
+        {
+            if (file == arquivo)
+            {
+                wordsDoArquivo[word.first] = file;
+            }
+        }
+    }
 
-	return counter == qtdWords;
+    unsigned int qtdPalavras = palavras.size();
+    unsigned int contador = 0;
+    for (const auto& wordsDoArquivo : wordsDoArquivo)
+    {
+        for (const auto& palavra : palavras)
+        {
+            if (wordsDoArquivo.first == palavra)
+            {
+                contador++;
+            }
+        }
+    }
+
+    return contador == qtdPalavras;
 }
 
-map<string, int, less<string>> Pesquisa::pesquisaRelavancia(string frase)
+std::map<std::string, int> Pesquisa::retornarRelevanciaFrase(const std::string& frase)
 {
-    map<string, set<string>, less<string>> words = arquivo.getWords();
-    set<string> palavrasFrase = normalizaPesquisa(frase);
-    set<string> arquivos = procuraNomeArquivos(words);
-    map<string, int, less<string>> arquivosPesquisa;
-    for (auto& arquivo : arquivos)
+    std::map<std::string, std::set<std::string>> words = arquivo.pegarPalavrasFormatadas();
+    std::set<std::string> palavrasFrase = ajustarPesquisaFrase(frase);
+    std::set<std::string> arquivos = nomesDosArquivos(words);
+    std::map<std::string, int> arquivosPesquisa;
+    for (const auto& arquivo : arquivos)
+    {
         arquivosPesquisa[arquivo] = 0;
+    }
 
     for (auto& arquivo : arquivosPesquisa)
-        if (relavante(words, palavrasFrase, arquivo.first))
+    {
+        if (seraQueEhRelevante(words, palavrasFrase, arquivo.first))
+        {
             arquivo.second++;
+        }
+    }
 
     bool primeiroArquivo = true;
-    for (auto& arquivo : arquivosPesquisa)
+    for (const auto& arquivo : arquivosPesquisa)
     {
         if (arquivo.second > 0)
         {
             if (primeiroArquivo)
             {
-                cout << "(" << arquivo.first << ", " << arquivo.second << ")";
+                std::cout << "(" << arquivo.first << ", " << arquivo.second << ")";
                 primeiroArquivo = false;
             }
             else
             {
-                cout << ", (" << arquivo.first << ", " << arquivo.second << ")";
+                std::cout << ", (" << arquivo.first << ", " << arquivo.second << ")";
             }
         }
     }
-    cout << endl;
+    std::cout << std::endl;
 
     return arquivosPesquisa;
 }
 
-set<string>  Pesquisa::procuraNomeArquivos(map<string, set<string>> words)
+std::set<std::string> Pesquisa::nomesDosArquivos(const std::map<std::string, std::set<std::string>>& words)
 {
-	set<string> arquivos;
-	for (auto &word : words)
-	{
-		for (auto &file : word.second)
-		{
-			arquivos.insert(file);
-		}
-	}
-	return arquivos;
+    std::set<std::string> arquivos;
+    for (const auto& word : words)
+    {
+        for (const auto& file : word.second)
+        {
+            arquivos.insert(file);
+        }
+    }
+    return arquivos;
 }
 
-set<string> Pesquisa::normalizaPesquisa(string frase)
+std::set<std::string> Pesquisa::ajustarPesquisaFrase(const std::string& frase)
 {
-	set<string> palavrasFrase;
-	stringstream ss(frase);
-	string palavra;
-	while (ss >> palavra)
-		palavrasFrase.insert(Utils::removerAcentos(palavra));
-	return palavrasFrase;
-}
-
-Pesquisa::Pesquisa()
-{
-}
-
-Pesquisa::Pesquisa(Arquivo arquivo)
-{
-	this->arquivo = arquivo;
+    std::set<std::string> palavrasFrase;
+    std::stringstream ss(frase);
+    std::string palavra;
+    while (ss >> palavra)
+    {
+        palavrasFrase.insert(Utils::removerDetalhesPalavras(palavra));
+    }
+    return palavrasFrase;
 }

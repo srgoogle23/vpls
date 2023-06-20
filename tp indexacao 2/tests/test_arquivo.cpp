@@ -8,54 +8,54 @@ TEST_CASE("Teste construtor e getters") {
     outfile.close();
 
     Arquivo arquivo("teste.txt");
-    CHECK(arquivo.getNome() == "teste.txt");
-    CHECK(arquivo.getWords().empty());
+    CHECK(arquivo.pegarNome() == "teste.txt");
+    CHECK(arquivo.pegarPalavrasFormatadas().empty());
 
     std::remove("teste.txt");
 }
 
-TEST_CASE("Teste setNome e getNome") {
+TEST_CASE("Teste configurarNome e pegarNome") {
     Arquivo arquivo;
-    arquivo.setNome("teste.txt");
-    CHECK(arquivo.getNome() == "teste.txt");
+    arquivo.configurarNome("teste.txt");
+    CHECK(arquivo.pegarNome() == "teste.txt");
 }
 
-TEST_CASE("Teste lePalavras") {
+TEST_CASE("Teste pegarPalavras") {
     std::ofstream outfile("teste.txt");
     outfile << "uma frase de teste";
     outfile.close();
 
     Arquivo arquivo("teste.txt");
-    arquivo.lePalavras();
+    arquivo.pegarPalavras();
     std::vector<std::string> palavrasEsperadas = {"uma", "frase", "de", "teste"};
-    CHECK(arquivo.getWords().empty());
-    arquivo.substituiCaracteres();
-    CHECK(arquivo.getWords().empty());
-    arquivo.lerArquivo();
+    CHECK(arquivo.pegarPalavrasFormatadas().empty());
+    arquivo.mudarLetras();
+    CHECK(arquivo.pegarPalavrasFormatadas().empty());
+    arquivo.pegarArquivo();
     std::map<std::string, std::set<std::string>> wordsEsperadas = {
         {"uma", {"teste.txt"}},
         {"frase", {"teste.txt"}},
         {"de", {"teste.txt"}},
         {"teste", {"teste.txt"}}
     };
-    CHECK(arquivo.getWords() == wordsEsperadas);
+    CHECK(arquivo.pegarPalavrasFormatadas() == wordsEsperadas);
 
     std::remove("teste.txt");
 }
 
-TEST_CASE("Teste mesclarWords") {
+TEST_CASE("Teste misturarPalavrasFormatadas") {
     Arquivo arquivo("teste.txt");
-    arquivo.setWords({{"uma", {"arquivo1.txt"}}, {"frase", {"arquivo1.txt"}}});
+    arquivo.configurarPalavrasFormatadas({{"uma", {"arquivo1.txt"}}, {"frase", {"arquivo1.txt"}}});
     std::map<std::string, std::set<std::string>> words = {
         {"frase", {"arquivo2.txt"}},
         {"teste", {"arquivo2.txt"}}
     };
-    arquivo.mesclarWords(words, "arquivo2.txt");
+    arquivo.misturarPalavrasFormatadas(words, "arquivo2.txt");
     std::map<std::string, std::set<std::string>> wordsEsperadas = {
         {"uma", {"arquivo1.txt"}},
         {"frase", {"arquivo1.txt", "arquivo2.txt"}},
         {"teste", {"arquivo2.txt"}}
     };
-    CHECK(arquivo.getWords() == wordsEsperadas);
+    CHECK(arquivo.pegarPalavrasFormatadas() == wordsEsperadas);
 }
 

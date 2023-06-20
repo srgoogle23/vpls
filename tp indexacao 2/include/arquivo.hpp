@@ -1,38 +1,32 @@
-#ifndef __ARQUIVO_HPP__
-#define __ARQUIVO_HPP__
+#ifndef ARQUIVO_HPP
+#define ARQUIVO_HPP
 
 #include <iostream>
 #include <string>
 #include <vector>
 #include <fstream>
-#include <cstring>
-#include <algorithm>
 #include <map>
 #include <set>
 
-using namespace std;
-
 class Arquivo
 {
-	private:
-		string nome;
-		vector<string> palavras;
-		map<string, set<string>, less<string>> formatedWords;
+private:
+	std::string nomeArquivo;
+	std::vector<std::string> palavras;
+	std::map<std::string, std::set<std::string>> palavrasFormatadas;
 
-	public:
-		Arquivo();
-		Arquivo(string nome);
-		void setNome(string nome);
-		string getNome();
-		void lePalavras();
-		void lerArquivo();
-		void substituiCaracteres();
-		void imprimir();
-		map<string, set<string>> getWords();
-		void setWords(map<string, set<string>> words);
-		void mesclarWords(map<string, set<string>> words, string nome);
+public:
+	Arquivo();
+	Arquivo(std::string nomeArquivo);
+	void configurarNome(std::string nomeArquivo);
+	std::string pegarNome();
+	void pegarPalavras();
+	void pegarArquivo();
+	void mudarLetras();
+	void mostrar();
+	std::map<std::string, std::set<std::string>> pegarPalavrasFormatadas();
+	void configurarPalavrasFormatadas(std::map<std::string, std::set<std::string>> words);
+	void misturarPalavrasFormatadas(std::map<std::string, std::set<std::string>> words, std::string nomeArquivo);
 };
 
 #endif
-
-// how to see code coverage done in doctest c

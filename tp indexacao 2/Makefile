@@ -35,7 +35,7 @@ clean:
 	$(RM) -r $(OBJDIR)/* $(BINDIR)/* coverage/* *.gcda *.gcno
 
 execute: clean all
-	./$(BINDIR)/$(TARGET) ./documentos
+	./$(BINDIR)/$(TARGET)
 
 coverage:
 	gcov -n ./bin/tester-tester -H -d

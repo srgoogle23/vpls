@@ -81,6 +81,7 @@
 		"random": "cpp",
 		"algorithm": "cpp",
 		"doctest": "cpp",
-		"filesystem": "cpp"
+		"filesystem": "cpp",
+		"regex": "cpp"
 	}
 }

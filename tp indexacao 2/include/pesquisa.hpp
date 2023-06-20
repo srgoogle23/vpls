@@ -1,22 +1,26 @@
-#ifndef __PESQUISA_HPP__
-#define __PESQUISA_HPP__
+#ifndef PESQUISA_HPP
+#define PESQUISA_HPP
 
 #include "arquivo.hpp"
 #include "utils.hpp"
 
+#include <map>
+#include <set>
+#include <string>
 #include <sstream>
 
 class Pesquisa
 {
-	private:
-		Arquivo arquivo;
-	public:
-		Pesquisa();
-		Pesquisa(Arquivo arquivo);
-		map<string, int, less<string>> pesquisaRelavancia(string frase);
-		set<string> normalizaPesquisa(string frase);
-		set<string> procuraNomeArquivos(map<string, set<string>> words);
-		bool relavante(map<string, set<string>> words, set<string> palavras, string arquivo);
+private:
+	Arquivo arquivo;
+
+public:
+	Pesquisa();
+	explicit Pesquisa(const Arquivo &arquivo);
+	std::map<std::string, int> retornarRelevanciaFrase(const std::string &frase);
+	std::set<std::string> ajustarPesquisaFrase(const std::string &frase);
+	std::set<std::string> nomesDosArquivos(const std::map<std::string, std::set<std::string>> &words);
+	bool seraQueEhRelevante(const std::map<std::string, std::set<std::string>> &words, const std::set<std::string> &palavras, const std::string &arquivo);
 };
 
-#endif
+#endif // PESQUISA_HPP
