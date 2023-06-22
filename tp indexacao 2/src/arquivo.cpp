@@ -43,7 +43,7 @@ void Arquivo::pegarArquivo()
 	mudarLetras();
 	for (unsigned int i = 0; i < this->palavras.size(); i++)
 	{
-		this->palavrasFormatadas[this->palavras[i]].insert(pegarNome());
+		this->palavrasFormatadas[this->palavras[i]].push_back(pegarNome());
 	}
 }
 
@@ -60,29 +60,49 @@ void Arquivo::mostrar()
 	}
 }
 
-std::map<std::string, std::set<std::string>> Arquivo::pegarPalavrasFormatadas()
+std::map<std::string, std::vector<std::string>> Arquivo::pegarPalavrasFormatadas()
 {
 	return palavrasFormatadas;
 }
 
-void Arquivo::configurarPalavrasFormatadas(std::map<std::string, std::set<std::string>> words)
+void Arquivo::configurarPalavrasFormatadas(std::map<std::string, std::vector<std::string>> words)
 {
 	this->palavrasFormatadas = words;
 }
 
-void Arquivo::misturarPalavrasFormatadas(std::map<std::string, std::set<std::string>> words, std::string nomeArquivo)
+void Arquivo::misturarPalavrasFormatadas(std::map<std::string, std::vector<std::string>> words, std::string nomeArquivo)
 {
-	std::map<std::string, std::set<std::string>> wordsFinal = this->pegarPalavrasFormatadas();
 	for (const auto &word : words)
 	{
-		if (wordsFinal.find(word.first) != wordsFinal.end())
+		for (const auto &file : word.second)
 		{
-			wordsFinal[word.first].insert(nomeArquivo);
+			if (this->contadorPalavras[word.first].find(file) != this->contadorPalavras[word.first].end())
+			{
+				this->contadorPalavras[word.first][file] += 1;
+			}
+			else
+			{
+				this->contadorPalavras[word.first][file] = 1;
+			}
+		}
+	}
+
+	std::map<std::string, std::vector<std::string>> wordsFinal = this->pegarPalavrasFormatadas();
+	for (auto &word : words)
+	{
+		if(wordsFinal.find(word.first) != wordsFinal.end())
+		{
+			wordsFinal[word.first].push_back(nomeArquivo);
 		}
 		else
 		{
-			wordsFinal[word.first].insert(nomeArquivo);
+			wordsFinal[word.first].push_back(nomeArquivo);
 		}
 	}
+
 	configurarPalavrasFormatadas(wordsFinal);
+}
+
+std::map<std::string, std::map<std::string, int>> Arquivo::pegarContadorPalavras(){
+	return this->contadorPalavras;
 }
